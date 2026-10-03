@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة متابعة ساعات المذاكرة - A2 Berlin</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            dark: '#0b1329',
+                            card: '#111c38',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #080f21;
+            color: #f1f5f9;
+        }
+        .glass-card {
+            background: rgba(17, 28, 56, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Navbar Header -->
+    <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Logo Placeholder -->
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/20 ring-2 ring-white/10">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white via-sky-200 to-sky-400 bg-clip-text text-transparent">
+                        أكاديمية لغة ألمانيا - Berlin
+                    </h1>
+                    <p class="text-xs text-sky-400/80 font-medium flex items-center gap-2">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        لوحة متابعة ساعات المذاكرة (سبتمبر 2026)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Group Info Badge -->
+            <div class="hidden md:flex items-center gap-3">
+                <div class="px-4 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300">
+                    <span class="text-slate-500 block text-[10px]">المجموعة / المستوى</span>
+                    <span class="font-bold text-sky-400 text-sm">A2 Berlin</span>
+                </div>
+                <div class="px-4 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300">
+                    <span class="text-slate-500 block text-[10px]">المستهدف الشهري</span>
+                    <span class="font-bold text-emerald-400 text-sm">90 ساعة (3 س/يوم)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+
+        <!-- KPI Cards Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Total Hours Card -->
+            <div class="glass-card rounded-2xl p-5 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all"></div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-semibold text-slate-400">إجمالي ساعات المجموعة</span>
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center border border-sky-500/20">
+                        <i class="fa-solid fa-clock text-lg"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-white tracking-tight" id="kpi-total-hours">152.3</span>
+                    <span class="text-xs text-slate-400">ساعة</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                    <span>من أصل</span>
+                    <span class="text-slate-200 font-bold">630 ساعة</span>
+                    <span>مطلوبة للمجموعة</span>
+                </p>
+            </div>
+
+            <!-- Average Hours Card -->
+            <div class="glass-card rounded-2xl p-5 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-semibold text-slate-400">متوسط ساعات الطالب</span>
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                        <i class="fa-solid fa-chart-line text-lg"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-white tracking-tight" id="kpi-avg-hours">21.7</span>
+                    <span class="text-xs text-slate-400">ساعة / طالب</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                    <span>بمعدل</span>
+                    <span class="text-indigo-300 font-bold">0.72 ساعة</span>
+                    <span>يومياً لكل طالب</span>
+                </p>
+            </div>
+
+            <!-- Top Student Card -->
+            <div class="glass-card rounded-2xl p-5 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-semibold text-slate-400">أعلى طالب إنجازاً 🌟</span>
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+                        <i class="fa-solid fa-trophy text-lg"></i>
+                    </div>
+                </div>
+                <div class="text-lg font-bold text-white truncate" id="kpi-top-student">Esraa Hosny Mahmoud</div>
+                <p class="text-xs text-amber-400/90 font-medium mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-fire text-xs"></i>
+                    <span id="kpi-top-hours" class="font-bold">81.87 ساعة</span>
+                    <span class="text-slate-400">(90.96% من الهدف)</span>
+                </p>
+            </div>
+
+            <!-- Target Compliance Rate Card -->
+            <div class="glass-card rounded-2xl p-5 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-semibold text-slate-400">نسبة تحقيق الهدف العام</span>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+                        <i class="fa-solid fa-bullseye text-lg"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-3xl font-black text-white tracking-tight" id="kpi-compliance">24.18%</span>
+                </div>
+                <!-- Mini Progress Bar -->
+                <div class="w-full bg-slate-800 rounded-full h-2 mt-3 overflow-hidden">
+                    <div id="kpi-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full transition-all duration-1000" style="width: 24.18%"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="glass-card rounded-2xl p-6 relative">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-sky-400"></i>
+                        مقارنة الساعات الفعلية بالمستهدف لكل طالب (90 ساعة)
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">رسم بياني يوضح الفارق بين الساعات المحققة لكل طالب وهدف الشهر</p>
+                </div>
+
+                <!-- Quick Filters / Info -->
+                <div class="flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 text-xs">
+                    <span class="px-3 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30 font-medium">
+                        <i class="fa-solid fa-calendar-days ml-1"></i> 30 يوماً
+                    </span>
+                    <span class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium">
+                        الهدف اليومي: 3 ساعات
+                    </span>
+                </div>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="relative w-full h-[340px] sm:h-[400px]">
+                <canvas id="studyChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Data Table Section -->
+        <section class="glass-card rounded-2xl p-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-sky-400"></i>
+                        جدول التقرير التفصيلي للطلاب
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">بيانات دقيقة لمستويات الأداء والرسائل التحفيزية الحالية</p>
+                </div>
+
+                <!-- Controls: Search & Sort -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Search Input -->
+                    <div class="relative min-w-[220px]">
+                        <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="بحث باسم الطالب..." 
+                               class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pr-9 pl-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                    </div>
+
+                    <!-- Filter Dropdown -->
+                    <select id="statusFilter" class="bg-slate-900/90 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 transition-all">
+                        <option value="all">جميع الحالات</option>
+                        <option value="excellent">ممتاز (أعلى من 80%)</option>
+                        <option value="good">جيد (30% - 80%)</option>
+                        <option value="warning">تحت المستهدف (أقل من 30%)</option>
+                    </select>
+
+                    <!-- Sort Button -->
+                    <button id="sortBtn" class="bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-sort text-sky-400"></i>
+                        <span id="sortText">ترتيب حسب: الأعلى إنجازاً</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Responsive Table Wrapper -->
+            <div class="overflow-x-auto custom-scrollbar rounded-xl border border-slate-800/80">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-slate-900/90 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+                        <tr>
+                            <th scope="col" class="py-4 px-4">الطالب</th>
+                            <th scope="col" class="py-4 px-4 text-center">الساعات الفعلية</th>
+                            <th scope="col" class="py-4 px-4 text-center">الدقائق</th>
+                            <th scope="col" class="py-4 px-4 text-center">المعدل اليومي</th>
+                            <th scope="col" class="py-4 px-4 text-center">نسبة التحقيق</th>
+                            <th scope="col" class="py-4 px-4 text-center">الحالة</th>
+                            <th scope="col" class="py-4 px-4">التوجيه والرسالة التحفيزية</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-800/60 font-medium">
+                        <!-- JS populated rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State Warning -->
+            <div id="emptyState" class="hidden text-center py-12 text-slate-500 text-sm">
+                <i class="fa-regular fa-folder-open text-3xl mb-2 text-slate-600 block"></i>
+                لم يتم العثور على نتائج مطابقة للبحث.
+            </div>
+        </section>
+
+        <!-- Summary Insights & Recommendations -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Strategic Recommendations -->
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                    توصيات وملاحظات للأكاديمية
+                </h3>
+                <ul class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <li class="flex items-start gap-2.5 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
+                        <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i>
+                        <span><strong>إشادة بالمتفوقين:</strong> الطالبة <span class="text-emerald-300 font-bold">Esraa Hosny</span> قاربت على إنهاء كامل الهدف بـ (81.87 ساعة)، يُوصى بتقديم مكافأة تشجيعية.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400 mt-0.5"></i>
+                        <span><strong>خطة دعم متوسطة:</strong> الطالب <span class="text-amber-300 font-bold">Khaled Mostafa</span> حقق 50% من الهدف، يحتاج متابعة أسبوعية لزيادة معدله إلى 3 ساعات يومياً.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5 bg-slate-900/50 p-3 rounded-xl border border-slate-800/60">
+                        <i class="fa-solid fa-bell text-rose-400 mt-0.5"></i>
+                        <span><strong>تدخل فوري:</strong> 5 طلاب حققوا أقل من 20% من الهدف الشهري (أقل من نصف ساعة يومياً)، يتطلب الأمر التواصل المباشر معهم لتحديد المعوقات.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Group Progress Overview -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-pie-chart text-sky-400"></i>
+                        توزيع الطلاب حسب مستوى الالتزام
+                    </h3>
+                    <div class="space-y-3 text-xs">
+                        <!-- Stat Item 1 -->
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>متفوقون جداً (أكثر من 75 ساعة)</span>
+                                <span class="font-bold text-emerald-400">1 طالب (14.3%)</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2">
+                                <div class="bg-emerald-500 h-2 rounded-full" style="width: 14.3%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 2 -->
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>أداء متوسط (30 - 75 ساعة)</span>
+                                <span class="font-bold text-sky-400">1 طالب (14.3%)</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2">
+                                <div class="bg-sky-500 h-2 rounded-full" style="width: 14.3%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stat Item 3 -->
+                        <div>
+                            <div class="flex justify-between text-slate-300 mb-1">
+                                <span>تحت المستهدف (أقل من 30 ساعة)</span>
+                                <span class="font-bold text-rose-400">5 طلاب (71.4%)</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-2">
+                                <div class="bg-rose-500 h-2 rounded-full" style="width: 71.4%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                    <span>تاريخ التقرير: سبتمبر 2026</span>
+                    <span class="text-sky-400 font-semibold"><i class="fa-solid fa-check-circle ml-1"></i>مُحدث بانتظام</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Dataset
+        const TARGET_HOURS = 90;
+        const MONTH_DAYS = 30;
+
+        const rawStudentsData = [
+            {
+                id: 1,
+                name: 'Esraa Hosny Mahmoud',
+                code: 'DOS100033',
+                minutes: 4912,
+                hours: 81.87,
+                badgeType: 'excellent',
+                badgeText: 'ممتاز 🌟',
+                message: 'أداء استثنائي رائع! أنتِ نموذج يحتذى به في الالتزام، واصلي التألق للوصول لقمة الهدف!'
+            },
+            {
+                id: 2,
+                name: 'Khaled Mostafa Abd El Fatah',
+                code: 'DOS100031',
+                minutes: 2724,
+                hours: 45.40,
+                badgeType: 'good',
+                badgeText: 'جيد 👍',
+                message: 'قطعنا منتصف الطريق بنجاح! مضاعفة الجهد القليل ستقفز بك للهدف النهائي.'
+            },
+            {
+                id: 3,
+                name: 'Raneem Adel Saleh',
+                code: 'DOS100021',
+                minutes: 1001,
+                hours: 16.68,
+                badgeType: 'warning',
+                badgeText: 'تحت المستهدف ⚠️',
+                message: 'بداية جيدة ولكن نحتاج إلى تنظيم الجدول اليومي لزيادة ساعات المذاكرة.'
+            },
+            {
+                id: 4,
+                name: 'Lamees Ragab Khalil',
+                code: 'DOS100039',
+                minutes: 310,
+                hours: 5.17,
+                badgeType: 'warning',
+                badgeText: 'تحت المستهدف ⚠️',
+                message: 'تنبيه: عدد الساعات قليل جداً مقارنة بالمستوى A2. يرجى البدء الفوري بحطة مكثفة.'
+            },
+            {
+                id: 5,
+                name: 'Abdelhady Kamal Tourky',
+                code: 'DOS100040',
+                minutes: 142,
+                hours: 2.37,
+                badgeType: 'warning',
+                badgeText: 'تحت المستهدف ⚠️',
+                message: 'تحذير: تحتاج إلى التزام يومي جاد للوصول لساعات المذاكرة المطلوبة تجنباً للتأخر.'
+            },
+            {
+                id: 6,
+                name: 'Ibrahiem Ahmed Elkholie',
+                code: 'DOS100034',
+                minutes: 50,
+                hours: 0.83,
+                badgeType: 'warning',
+                badgeText: 'تحت المستهدف ⚠️',
+                message: 'تنبيه عاجل: الأداء منخفض جداً، الرجاء التواصل مع مشرف الدورة لوضع جدول مناسب.'
+            },
+            {
+                id: 7,
+                name: 'Ahmed Sayed Ahmed Ibrahim',
+                code: 'DOS100019',
+                minutes: 0,
+                hours: 0.00,
+                badgeType: 'danger',
+                badgeText: 'لم يبدأ بعد ❌',
+                message: 'خطر: لم يتم تسجيل أي ساعات مذاكرة لهذا الشهر. يتطلب التدخل فوراً.'
+            }
+        ];
+
+        // Processed Student Data
+        let students = rawStudentsData.map(s => {
+            const completionPct = ((s.hours / TARGET_HOURS) * 100).toFixed(2);
+            const dailyAvg = (s.hours / MONTH_DAYS).toFixed(2);
+            return {
+                ...s,
+                completionPct: parseFloat(completionPct),
+                dailyAvg: parseFloat(dailyAvg)
+            };
+        });
+
+        // State for sorting & filtering
+        let sortAsc = false; // default high to low
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // DOM Elements
+        const tableBody = document.getElementById('tableBody');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const sortBtn = document.getElementById('sortBtn');
+        const sortText = document.getElementById('sortText');
+
+        let studyChart = null;
+
+        function initChart(data) {
+            const ctx = document.getElementById('studyChart').getContext('2d');
+            
+            // Gradient for actual hours bar
+            const actualGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            actualGradient.addColorStop(0, '#38bdf8');
+            actualGradient.addColorStop(1, '#0284c7');
+
+            // Gradient for target line/bar
+            const targetGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            targetGradient.addColorStop(0, 'rgba(244, 63, 94, 0.4)');
+            targetGradient.addColorStop(1, 'rgba(225, 29, 72, 0.1)');
+
+            studyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(s => s.name.split(' ')[0] + ' ' + (s.name.split(' ')[1] || '')),
+                    datasets: [
+                        {
+                            label: 'الساعات الفعلية',
+                            data: data.map(s => s.hours),
+                            backgroundColor: actualGradient,
+                            borderColor: '#38bdf8',
+                            borderWidth: 1.5,
+                            borderRadius: 8,
+                            barThickness: 24,
+                        },
+                        {
+                            label: 'الهدف الشهري (90 ساعة)',
+                            data: data.map(() => TARGET_HOURS),
+                            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                            borderColor: 'rgba(244, 63, 94, 0.6)',
+                            borderWidth: 1.5,
+                            borderDash: [5, 5],
+                            borderRadius: 8,
+                            barThickness: 24,
+                            type: 'bar'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rtl: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Cairo', size: 12 },
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} ساعة`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { family: 'Cairo', size: 11 }
+                            }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { family: 'Cairo', size: 11 },
+                                callback: value => value + ' س'
+                            },
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function getBadgeHTML(type, text) {
+            switch(type) {
+                case 'excellent':
+                    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold"><i class="fa-solid fa-circle-check text-[9px]"></i> ${text}</span>`;
+                case 'good':
+                    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[11px] font-bold"><i class="fa-solid fa-thumbs-up text-[9px]"></i> ${text}</span>`;
+                case 'danger':
+                    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[11px] font-bold"><i class="fa-solid fa-circle-xmark text-[9px]"></i> ${text}</span>`;
+                default:
+                    return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-bold"><i class="fa-solid fa-triangle-exclamation text-[9px]"></i> ${text}</span>`;
+            }
+        }
+
+        function renderTable() {
+            // Filter
+            let filtered = students.filter(s => {
+                const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      s.code.toLowerCase().includes(searchQuery.toLowerCase());
+                
+                let matchesStatus = true;
+                if (currentFilter === 'excellent') matchesStatus = s.badgeType === 'excellent';
+                if (currentFilter === 'good') matchesStatus = s.badgeType === 'good';
+                if (currentFilter === 'warning') matchesStatus = s.badgeType === 'warning' || s.badgeType === 'danger';
+
+                return matchesSearch && matchesStatus;
+            });
+
+            // Sort
+            filtered.sort((a, b) => sortAsc ? a.hours - b.hours : b.hours - a.hours);
+
+            // Render
+            tableBody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                
+                filtered.forEach(s => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-800/40 transition-colors group";
+
+                    // Highlight row if excellent
+                    const nameColor = s.badgeType === 'excellent' ? 'text-emerald-300 font-bold' : 'text-slate-100 font-semibold';
+
+                    row.innerHTML = `
+                        <td class="py-4 px-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold text-xs group-hover:border-sky-500/40 transition-colors">
+                                    ${s.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <div class="${nameColor}">${s.name}</div>
+                                    <div class="text-[10px] text-slate-500">${s.code}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <span class="text-sm font-black text-white">${s.hours.toFixed(2)}</span>
+                            <span class="text-[10px] text-slate-400 block">ساعة</span>
+                        </td>
+                        <td class="py-4 px-4 text-center font-mono text-slate-300">
+                            ${s.minutes.toLocaleString()} د
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <span class="font-semibold ${s.dailyAvg >= 2.5 ? 'text-emerald-400' : 'text-slate-300'}">${s.dailyAvg}</span>
+                            <span class="text-[10px] text-slate-500 block">س/يوم</span>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <div class="inline-flex flex-col items-center">
+                                <span class="font-bold ${s.completionPct >= 80 ? 'text-emerald-400' : s.completionPct >= 30 ? 'text-sky-400' : 'text-rose-400'}">
+                                    ${s.completionPct}%
+                                </span>
+                                <div class="w-16 bg-slate-800 rounded-full h-1.5 mt-1 overflow-hidden">
+                                    <div class="h-1.5 rounded-full ${s.completionPct >= 80 ? 'bg-emerald-400' : s.completionPct >= 30 ? 'bg-sky-400' : 'bg-rose-500'}" style="width: ${Math.min(s.completionPct, 100)}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4 text-center whitespace-nowrap">
+                            ${getBadgeHTML(s.badgeType, s.badgeText)}
+                        </td>
+                        <td class="py-4 px-4 text-slate-300 text-xs leading-relaxed max-w-xs">
+                            <div class="p-2.5 rounded-xl bg-slate-900/40 border border-slate-800/60 text-[11px] text-slate-300">
+                                ${s.message}
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderTable();
+        });
+
+        statusFilter.addEventListener('change', (e) => {
+            currentFilter = e.target.value;
+            renderTable();
+        });
+
+        sortBtn.addEventListener('click', () => {
+            sortAsc = !sortAsc;
+            sortText.textContent = sortAsc ? 'ترتيب حسب: الأقل إنجازاً' : 'ترتيب حسب: الأعلى إنجازاً';
+            renderTable();
+        });
+
+        // Initialize on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            initChart(students);
+        });
+    </script>
+</body>
+</html>
